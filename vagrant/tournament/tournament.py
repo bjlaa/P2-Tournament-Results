@@ -34,9 +34,9 @@ def countPlayers():
     db = connect()
     c = db.cursor()
     c.execute('SELECT Count(ID) as num FROM Players')
-    rows = c.fetchall()
+    rows = c.fetchone()[0]
     db.close()
-    return rows[0][0];
+    return rows;
 
 def registerPlayer(name):
     """Adds a player to the tournament database.
@@ -68,19 +68,19 @@ def playerStandings():
     """
 
     base_query = """
-    select players.id, name, count(matches.id) as {win_or_loss}
-        from players left join matches
-            on players.id = {field}
-        group by players.id
-        order by {win_or_loss} desc
+    SELECT players.id, name, count(matches.id) AS {win_or_loss}
+        FROM players left join matches
+            ON players.id = {field}
+        GROUP BY players.id
+        ORDER BY {win_or_loss} DESC
     """
     query_wins = base_query.format(field='winner', win_or_loss='wins')
     query_losses = base_query.format(field='loser', win_or_loss='losses')
 
     query_join = """
-    select winners.id, winners.name, wins, wins+losses as matches
-        from ({query_wins}) as winners left join ({query_losses}) as losers
-            on winners.id = losers.id;
+    SELECT winners.id, winners.name, wins, wins+losses AS matches
+        FROM ({query_wins}) AS winners LEFT JOIN ({query_losses}) AS losers
+            ON winners.id = losers.id;
     """.format(query_wins=query_wins, query_losses=query_losses)
     db = connect()
     c = db.cursor()

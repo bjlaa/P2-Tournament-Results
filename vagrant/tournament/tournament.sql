@@ -22,4 +22,3 @@ CREATE TABLE Matches (
 	loser int references Players(ID),
 	result int
 );
-
