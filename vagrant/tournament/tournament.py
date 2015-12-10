@@ -69,7 +69,7 @@ def playerStandings():
 
     base_query = """
     SELECT players.id, name, count(matches.id) AS {win_or_loss}
-        FROM players left join matches
+        FROM players LEFT JOIN matches
             ON players.id = {field}
         GROUP BY players.id
         ORDER BY {win_or_loss} DESC
@@ -80,7 +80,8 @@ def playerStandings():
     query_join = """
     SELECT winners.id, winners.name, wins, wins+losses AS matches
         FROM ({query_wins}) AS winners LEFT JOIN ({query_losses}) AS losers
-            ON winners.id = losers.id;
+            ON winners.id = losers.id
+        ORDER BY wins;
     """.format(query_wins=query_wins, query_losses=query_losses)
     db = connect()
     c = db.cursor()
@@ -120,6 +121,12 @@ def swissPairings():
     standings = [(match[0], match[1]) for match in playerStandings()]
     if len(standings) < 2:
         raise KeyError("Error: The number of players needs to be at least of two to proceed to Swiss Pairings.")
+    """
+    Added: an error message displays if the number of players isn't even.
+    """
+    if (len(standings) % 2) == 1:
+        raise ValueError(
+            "The number of players needs to be even.")
     first = standings[0::2]
     second = standings[1::2]
     pairings = zip(first, second)

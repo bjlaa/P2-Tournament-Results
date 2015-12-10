@@ -12,13 +12,13 @@ CREATE DATABASE tournament;
 
 
 CREATE TABLE Players (
-	ID serial primary key,
-	name varchar
+	ID SERIAL PRIMARY KEY,
+	name VARCHAR NOT NULL
 );
 
 CREATE TABLE Matches (
-	ID serial primary key,
-	winner int references Players(ID),
-	loser int references Players(ID),
-	result int
+	ID SERIAL PRIMARY KEY,
+	winner INT REFERENCES Players(ID),
+	loser INT REFERENCES Players(ID),
+	result INT
 );
